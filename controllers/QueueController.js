@@ -1,17 +1,79 @@
 const queue = require('../models').queue;
-console.log(queue);
+const { emitQueue } = require('./SocketController');
 
+const findAll = async() => {
+    return await queue.findAll();
+};
 
-const createQueue = async (queueing_at, ordered_at, paymented_at, serviced_at) => {
+const update = async (param, query) => {
+    await queue.update(param, query);
+    return await queue.findOne({where: { id: query.where.id }});
+};
+
+const createNewQueue = async isMan => {
+    console.log(isMan);
     const obj = {
-        queueing_at,
-        ordered_at,
-        paymented_at,
-        serviced_at
+        queueing_at: new Date(),
+        is_man: isMan
+    };
+    const newQueue = await queue.create(obj);
+    emitQueue(newQueue);
+    return newQueue;
+};
+
+const updateOrderedAt = async id => {
+    const param = {
+        ordered_at: new Date()
     };
 
-    return await queue.create(obj);
-}
+    const query = {
+        where: {
+            id: id,
+            ordered_at: null
+        }
+    }
+    const updatedQueue = await update(param, query);
+    emitQueue(updatedQueue);
+    return updatedQueue;
+};
 
-module.exports = {};
+const updatePaymentedAt = async id => {
+    const param = {
+        paymented_at: new Date()
+    };
+    const query = {
+        where: {
+            id: id,
+            paymented_at: null
+        }
+    }
+
+    const updatedQueue = await update(param, query);
+    emitQueue(updatedQueue);
+    return updatedQueue;
+};
+
+const updateServicedAt = async id=> {
+    const param = {
+        serviced_at: new Date()
+    };
+
+    const query = {
+        where: {
+            id: id,
+            serviced_at: null
+        }
+    }
+    const updatedQueue = await update(param, query);
+    emitQueue(updatedQueue);
+    return updatedQueue;
+};
+
+module.exports = {
+    findAll,
+    createNewQueue,
+    updateOrderedAt,
+    updatePaymentedAt,
+    updateServicedAt,
+};
 

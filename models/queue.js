@@ -4,7 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     queueing_at: DataTypes.DATE,
     ordered_at: DataTypes.DATE,
     paymented_at: DataTypes.DATE,
-    serviced_at: DataTypes.DATE
+      serviced_at: DataTypes.DATE,
+      is_man: DataTypes.BOOLEAN,
   }, {
     underscored: true,
   });
