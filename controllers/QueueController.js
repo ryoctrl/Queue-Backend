@@ -1,8 +1,22 @@
 const queue = require('../models').queue;
 const { emitQueue } = require('./SocketController');
+const OP = require('sequelize').Sequelize.Op;
 
 const findAll = async() => {
     return await queue.findAll();
+};
+
+const findAllByUncompleted = async () => {
+    const query = {
+        where: {
+            [OP.or]: [
+                { ordered_at: null },
+                { paymented_at: null },
+                { serviced_at: null },
+            ]
+        }
+    };
+    return await queue.findAll(query);
 };
 
 const update = async (param, query) => {
@@ -53,9 +67,10 @@ const updatePaymentedAt = async id => {
     return updatedQueue;
 };
 
-const updateServicedAt = async id=> {
+const updateServicedAt = async (id, isCacheLess) => {
     const param = {
-        serviced_at: new Date()
+        serviced_at: new Date(),
+        is_cacheless: isCacheLess
     };
 
     const query = {
@@ -71,6 +86,7 @@ const updateServicedAt = async id=> {
 
 module.exports = {
     findAll,
+    findAllByUncompleted,
     createNewQueue,
     updateOrderedAt,
     updatePaymentedAt,

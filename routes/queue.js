@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     findAll,
+    findAllByUncompleted,
     createNewQueue,
     updateOrderedAt,
     updatePaymentedAt,
@@ -11,7 +12,9 @@ const {
 
 // 未完了のQueueを取得
 router.get('/', async (req, res) => {
-    res.json(await findAll());
+    const option = req.query.option;
+    const result = option === 'uncompleted' ? await findAllByUncompleted() : await findAll();
+    res.json(result);
 });
 
 // 新規Queueを作成(行列参加時)
@@ -40,7 +43,9 @@ router.post('/payment', async (req, res) => {
 // QueueにServicedAtを登録(注文決済が終わった時)
 router.post('/service', async (req, res) => {
     const queueId = req.body.id;
-    const queue = await updateServicedAt(queueId);
+    const isCacheLess = req.body.isCacheLess;
+    console.log(isCacheLess);
+    const queue = await updateServicedAt(queueId, isCacheLess);
     res.json({ queue });
 });
 
