@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
     paymented_at: DataTypes.DATE,
     serviced_at: DataTypes.DATE,
     is_man: DataTypes.BOOLEAN,
-    is_cacheless: DataTypes.BOOLEAN
+    is_cacheless: DataTypes.BOOLEAN,
+    handed_at: DataTypes.DATE
   }, {
     underscored: true,
   });

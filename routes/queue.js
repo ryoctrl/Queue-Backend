@@ -7,6 +7,7 @@ const {
     updateOrderedAt,
     updatePaymentedAt,
     updateServicedAt,
+    updateHandedAt,
 } = require('../controllers/QueueController');
 
 
@@ -47,6 +48,12 @@ router.post('/service', async (req, res) => {
     console.log(isCacheLess);
     const queue = await updateServicedAt(queueId, isCacheLess);
     res.json({ queue });
+});
+
+router.post('/hand', async (req, res) => {
+    const queueId = req.body.id;
+    const queue = await updateHandedAt(queueId);
+    res.json({queue});
 });
 
 module.exports = router;

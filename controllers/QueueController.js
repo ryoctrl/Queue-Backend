@@ -84,6 +84,22 @@ const updateServicedAt = async (id, isCacheLess) => {
     return updatedQueue;
 };
 
+const updateHandedAt = async id => {
+    const param = {
+        handed_at: new Date()
+    };
+    const query = {
+        where: {
+            id: id,
+            handed_at: null
+        }
+    }
+
+    const updatedQueue = await update(param, query);
+    emitQueue(updatedQueue);
+    return updatedQueue;
+};
+
 module.exports = {
     findAll,
     findAllByUncompleted,
@@ -91,5 +107,6 @@ module.exports = {
     updateOrderedAt,
     updatePaymentedAt,
     updateServicedAt,
+    updateHandedAt,
 };
 
