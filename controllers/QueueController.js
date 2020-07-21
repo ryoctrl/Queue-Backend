@@ -1,6 +1,7 @@
 const queue = require('../models').queue;
 const { emitQueue } = require('./SocketController');
 const OP = require('sequelize').Sequelize.Op;
+const moment = require('moment');
 
 const findAll = async() => {
     return await queue.findAll();
@@ -20,8 +21,12 @@ const findAllByUncompleted = async () => {
 };
 
 const update = async (param, query) => {
-    await queue.update(param, query);
-    return await queue.findOne({where: { id: query.where.id }});
+    const q = await queue.update(param, query);
+    Object.keys(query.where).map(key => {
+        if(query.where[key] !== null) return;
+        delete query.where[key];
+    });
+    return await queue.findOne(query);
 };
 
 const createNewQueue = async isMan => {
@@ -51,9 +56,10 @@ const updateOrderedAt = async id => {
     return updatedQueue;
 };
 
-const updatePaymentedAt = async id => {
+const updatePaymentedAt = async (id, orderId) => {
     const param = {
-        paymented_at: new Date()
+        paymented_at: new Date(),
+        order_id: orderId,
     };
     const query = {
         where: {
@@ -84,15 +90,17 @@ const updateServicedAt = async (id, isCacheLess) => {
     return updatedQueue;
 };
 
-const updateHandedAt = async id => {
+const updateHandedAt = async orderId => {
     const param = {
         handed_at: new Date()
     };
     const query = {
         where: {
-            id: id,
+            order_id: orderId,
             handed_at: null
-        }
+        },
+        returning: true,
+        plain: true
     }
 
     const updatedQueue = await update(param, query);
@@ -100,9 +108,39 @@ const updateHandedAt = async id => {
     return updatedQueue;
 };
 
+const getQueues = async (options = {}) => {
+    const date = options.date;
+    const query = {
+        where: {
+            order_id: {
+                [OP.ne]: null,
+            },
+            handed_at: {
+                [OP.ne]: null,
+            }
+        }
+    };
+
+    const dateMom = moment(date);
+    const start = dateMom.hours(12).minutes(0).seconds(0).milliseconds(0);
+    const gte = start.toDate();
+    const end = dateMom.hours(13).minutes(0).seconds(0).milliseconds(0);
+    const lte = end.toDate();
+    if(dateMom.isValid()) {
+        query.where.paymented_at = {
+            [OP.gte]: gte,
+            [OP.lte]: lte,
+        }
+    }
+    const queues = await queue.findAll(query);
+    console.log(queues.length);
+    return queues;
+}
+
 module.exports = {
     findAll,
     findAllByUncompleted,
+    getQueues,
     createNewQueue,
     updateOrderedAt,
     updatePaymentedAt,

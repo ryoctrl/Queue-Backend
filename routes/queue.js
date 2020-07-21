@@ -8,6 +8,7 @@ const {
     updatePaymentedAt,
     updateServicedAt,
     updateHandedAt,
+    getQueues,
 } = require('../controllers/QueueController');
 
 
@@ -37,7 +38,10 @@ router.post('/order', async (req, res) => {
 // QueueにPaymentedAtを登録(注文が終わり決済が始まった時
 router.post('/payment', async (req, res) => {
     const queueId = req.body.id;
-    const queue = await updatePaymentedAt(queueId);
+    const orderId = req.body.orderId || -1;
+    console.log(req.body);
+    console.log(orderId);
+    const queue = await updatePaymentedAt(queueId, orderId);
     res.json({ queue });
 });
 
@@ -51,9 +55,27 @@ router.post('/service', async (req, res) => {
 });
 
 router.post('/hand', async (req, res) => {
-    const queueId = req.body.id;
-    const queue = await updateHandedAt(queueId);
+    console.log(req.body);
+    const orderId = req.body.orderId;
+    if(!orderId) {
+        return res.status(500).json({});
+    }
+    const queue = await updateHandedAt(orderId);
     res.json({queue});
+});
+
+router.get('/pure', async (req, res) => {
+    const date = req.query.date;
+    const queues = await getQueues({date});
+    res.json(queues);
+});
+
+router.get('/json', async (req, res) => {
+    const date = req.query.date;
+    const queues = await getQueues({date});
+    res.setHeader('Content-disposition', `attachment; filename=${date}-queue.json`);
+    res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+    res.send(queues);
 });
 
 module.exports = router;

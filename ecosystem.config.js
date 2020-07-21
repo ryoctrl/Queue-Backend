@@ -1,12 +1,12 @@
 module.exports = {
     apps: [
         {
-            name: 'QueueAPI',
+            name: 'MOAP-Queue',
             script: 'npm',
             args: 'start',
             watch: true,
             env: {
-                PORT: 9506
+                PORT: 9507
             }
         }
     ]
