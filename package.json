@@ -16,5 +16,8 @@
     "mysql2": "^1.6.5",
     "sequelize": "^5.9.4",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.2.0"
   }
 }
