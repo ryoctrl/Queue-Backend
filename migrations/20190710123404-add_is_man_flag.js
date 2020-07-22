@@ -5,6 +5,7 @@ module.exports = {
         return queryInterface.addColumn('queues', 'is_man', {
             type: Sequelize.BOOLEAN,
             allowNull: false,
+            defaultValue: true,
         });
     },
     down: (queryInterface, Sequelize) => {
