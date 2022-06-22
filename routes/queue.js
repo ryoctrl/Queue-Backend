@@ -38,7 +38,7 @@ router.post('/order', async (req, res) => {
 // QueueにPaymentedAtを登録(注文が終わり決済が始まった時
 router.post('/payment', async (req, res) => {
     const queueId = req.body.id;
-    const orderId = req.body.orderId || -1;
+    const orderId = queueId;
     console.log(req.body);
     console.log(orderId);
     const queue = await updatePaymentedAt(queueId, orderId);
@@ -56,8 +56,8 @@ router.post('/service', async (req, res) => {
 
 router.post('/hand', async (req, res) => {
     console.log(req.body);
-    const orderId = req.body.orderId;
-    if(!orderId) {
+    const orderId = req.body.order_id;
+    if (!orderId) {
         return res.status(500).json({});
     }
     const queue = await updateHandedAt(orderId);
