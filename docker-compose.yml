@@ -1,0 +1,40 @@
+version: '3.1'
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - .docker/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_HOST: queue-api
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: queue
+      MYSQL_USER: queue
+      MYSQL_PASSWORD: queue
+    networks:
+      - queue-network
+  queue-api:
+    build: .
+    environment:
+      DB_HOST: db
+      DB_USER: queue
+      DB_PASS: queue
+      DB_DATABASE: queue
+      DEBUG: queueapi:server
+    command: ['node', 'bin/www'] 
+    ports:
+      - 9507:3000
+    volumes:
+      - ./:/home/node/
+    networks:
+      - queue-network
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - queue-network
+
+networks:
+  queue-network:
