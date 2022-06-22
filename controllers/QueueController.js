@@ -122,9 +122,11 @@ const getQueues = async (options = {}) => {
     };
 
     const dateMom = moment(date);
-    const start = dateMom.hours(12).minutes(0).seconds(0).milliseconds(0);
+    const start = dateMom.startOf('day');
+    // const start = dateMom.hours(0).minutes(0).seconds(0).milliseconds(0);
     const gte = start.toDate();
-    const end = dateMom.hours(13).minutes(0).seconds(0).milliseconds(0);
+    const end = dateMom.endOf('day');
+    // const end = dateMom.hours(13).minutes(0).seconds(0).milliseconds(0);
     const lte = end.toDate();
     if(dateMom.isValid()) {
         query.where.paymented_at = {
