@@ -75,7 +75,7 @@ router.get('/json', async (req, res) => {
     const queues = await getQueues({date});
     res.setHeader('Content-disposition', `attachment; filename=${date}-queue.json`);
     res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-    res.send(queues);
+    res.send(JSON.stringify(queues, null, 4));
 });
 
 module.exports = router;
